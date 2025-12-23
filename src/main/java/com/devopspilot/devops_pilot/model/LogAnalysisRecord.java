@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Document(collection="log_analyses")
-public class LogAnalysis {
+public class LogAnalysisRecord {
     @Id
     private String id;
 
@@ -20,7 +20,7 @@ public class LogAnalysis {
     private List<String> suggestedFixes;
 
     private Instant createdAt;
-    public LogAnalysis(){
+    public LogAnalysisRecord(){
         this.createdAt = Instant.now();
     }
 
