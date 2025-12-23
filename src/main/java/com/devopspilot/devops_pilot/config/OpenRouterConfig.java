@@ -16,6 +16,8 @@ public class OpenRouterConfig {
                 .baseUrl(baseUrl)
                 .defaultHeader("Authorization", "Bearer " + apiKey)
                 .defaultHeader("Content-Type", "application/json")
+                .defaultHeader("HTTP-Referer", "http://localhost:8080")
+                .defaultHeader("X-Title", "DevOps Pilot")
                 .build();
     }
 }

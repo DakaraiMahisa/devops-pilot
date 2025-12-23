@@ -1,7 +1,9 @@
 package com.devopspilot.devops_pilot.dto;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.List;
+@JsonPropertyOrder({ "summary", "rootCause", "suggestedFixes" })
 public class AiAnalysisResult {
 
     private String summary;
