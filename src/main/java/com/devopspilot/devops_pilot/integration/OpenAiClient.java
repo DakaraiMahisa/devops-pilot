@@ -1,6 +1,7 @@
 package com.devopspilot.devops_pilot.integration;
 
 import com.devopspilot.devops_pilot.dto.AiAnalysisResult;
+import com.devopspilot.devops_pilot.enums.ErrorCategory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,14 +22,6 @@ public class OpenAiClient {
    }
     public AiAnalysisResult analyzeLog(String logText) {
 
-        /*
-        // TEMPORARY STUB (next step will replace this)
-        AiAnalysisResult result = new AiAnalysisResult();
-        result.setSummary("AI analysis placeholder");
-        result.setRootCause("OpenAI call not yet implemented");
-        result.setSuggestedFixes(
-                java.util.List.of("Implement OpenAI integration")
-        );*/
         Map<String, Object> requestBody = Map.of(
                 "model", model,
                 "messages", List.of(
@@ -45,8 +38,19 @@ public class OpenAiClient {
                                         JSON schema:
                                         {
                                           "summary": string,
+                                          "suggestedFixes": string[],
                                           "rootCause": string,
-                                          "suggestedFixes": string[]
+                                          "errorCategory": one of [
+                                            "BUILD_CONFIGURATION",
+                                            "DEPENDENCY_RESOLUTION",
+                                            "ENVIRONMENT_MISMATCH",
+                                            "TEST_FAILURE",
+                                            "INFRASTRUCTURE",
+                                            "PERMISSION_AUTH",
+                                            "TIMEOUT_RESOURCE",
+                                            "UNKNOWN"
+                                          ],
+                                          "confidence": number between 0.0 and 1.0
                                         }
                                         
                                         If unsure, use clear, conservative language.
@@ -79,16 +83,37 @@ public class OpenAiClient {
     }
         private AiAnalysisResult parseSafely(String content) {
             try {
-                return objectMapper.readValue(content, AiAnalysisResult.class);
+                String cleaned = cleanJson(content);
+                return objectMapper.readValue(cleaned,AiAnalysisResult.class);
             } catch (Exception e) {
                 return fallback("Malformed AI response", content);
             }
         }
+    private String cleanJson(String content) {
+        if (content == null) {
+            return "";
+        }
 
-        private AiAnalysisResult fallback(String reason, String details) {
+        content = content.trim();
+
+        // Remove Markdown JSON fences if present
+        if (content.startsWith("```")) {
+            content = content
+                    .replaceFirst("```json", "")
+                    .replaceFirst("```", "")
+                    .trim();
+        }
+
+        return content;
+    }
+
+
+    private AiAnalysisResult fallback(String reason, String details) {
             AiAnalysisResult result = new AiAnalysisResult();
             result.setSummary(reason);
             result.setRootCause(details);
+            result.setErrorCategory(ErrorCategory.UNKNOWN);
+            result.setConfidence(0.0);
             result.setSuggestedFixes(
                     List.of("Review logs manually", "Retry analysis")
             );

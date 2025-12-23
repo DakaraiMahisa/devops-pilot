@@ -7,8 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 import java.util.List;
 
-@Document(collection="log_analyses")
-public class LogAnalysisRecord {
+@Document(collection = "log_analysis")
+public class LogAnalysis {
+
     @Id
     private String id;
 
@@ -17,24 +18,17 @@ public class LogAnalysisRecord {
 
     private String summary;
     private String rootCause;
+    private List<String> suggestedFixes;
 
     private ErrorCategory errorCategory;
     private Double confidence;
 
+    private Instant analyzedAt;
 
-    private List<String> suggestedFixes;
-
-    private Instant createdAt;
-    public LogAnalysisRecord(){
-        this.createdAt = Instant.now();
-    }
+    // ====== GETTERS & SETTERS ======
 
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getPipelineType() {
@@ -77,14 +71,6 @@ public class LogAnalysisRecord {
         this.suggestedFixes = suggestedFixes;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public ErrorCategory getErrorCategory() {
         return errorCategory;
     }
@@ -99,5 +85,13 @@ public class LogAnalysisRecord {
 
     public void setConfidence(Double confidence) {
         this.confidence = confidence;
+    }
+
+    public Instant getAnalyzedAt() {
+        return analyzedAt;
+    }
+
+    public void setAnalyzedAt(Instant analyzedAt) {
+        this.analyzedAt = analyzedAt;
     }
 }
