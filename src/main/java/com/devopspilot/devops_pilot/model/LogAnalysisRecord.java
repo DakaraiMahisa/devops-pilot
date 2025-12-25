@@ -2,6 +2,7 @@ package com.devopspilot.devops_pilot.model;
 
 import com.devopspilot.devops_pilot.enums.ErrorCategory;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -12,18 +13,21 @@ public class LogAnalysisRecord {
     @Id
     private String id;
 
+    @Indexed
     private String pipelineType;
     private String logText;
 
     private String summary;
     private String rootCause;
 
+    @Indexed
     private ErrorCategory errorCategory;
     private Double confidence;
 
 
     private List<String> suggestedFixes;
 
+    @Indexed
     private Instant createdAt;
     public LogAnalysisRecord(){
         this.createdAt = Instant.now();

@@ -35,6 +35,10 @@ public class LogAnalysis {
         return pipelineType;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public void setPipelineType(String pipelineType) {
         this.pipelineType = pipelineType;
     }

@@ -11,6 +11,8 @@ import com.devopspilot.devops_pilot.integration.OpenAiClient;
 import com.devopspilot.devops_pilot.model.LogAnalysis;
 import com.devopspilot.devops_pilot.model.LogAnalysisRecord;
 import com.devopspilot.devops_pilot.repository.LogAnalysisRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,7 +26,6 @@ public class LogAnalysisService {
         this.openAiClient = openAiClient;
         this.repository=repository;
     }
-
     public LogAnalysisResponse analyze(LogAnalysisRequest request){
 // 1. Call AI
         AiAnalysisResult aiResult =
@@ -35,7 +36,8 @@ public class LogAnalysisService {
             aiResult.setErrorCategory(ErrorCategory.UNKNOWN);
         }
 
-        if (aiResult.getConfidence() <= 0) {
+        if (aiResult.getConfidence() == null ||
+                aiResult.getConfidence() <= 0) {
             aiResult.setConfidence(0.0);
         }
 
@@ -73,4 +75,15 @@ public class LogAnalysisService {
 
         return response;
     }
+    public Page<LogAnalysisRecord> getByErrorCategory(
+            ErrorCategory category,
+            Pageable pageable) {
+        return repository.findByErrorCategory(category, pageable);
+    }
+
+    public Page<LogAnalysisRecord> getAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+
 }
