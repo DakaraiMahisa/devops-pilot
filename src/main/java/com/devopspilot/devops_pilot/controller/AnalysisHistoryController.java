@@ -1,17 +1,12 @@
 package com.devopspilot.devops_pilot.controller;
-
+import com.devopspilot.devops_pilot.dto.LogAnalysisRecordResponse;
 import com.devopspilot.devops_pilot.enums.ErrorCategory;
-import com.devopspilot.devops_pilot.model.LogAnalysisRecord;
 import com.devopspilot.devops_pilot.repository.LogAnalysisRepository;
 import com.devopspilot.devops_pilot.service.LogAnalysisService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/analyses")
@@ -23,31 +18,28 @@ public class AnalysisHistoryController {
         this.service=service;
     }
     @GetMapping
-    public Page<LogAnalysisRecord> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<LogAnalysisRecordResponse> getAll(Pageable pageable) {
         return service.getAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public LogAnalysisRecord getById(@PathVariable String id){
-        return repository.findById(id)
-                .orElseThrow(()->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Analysis not found"));
+    public LogAnalysisRecordResponse getById(@PathVariable String id) {
+        return service.getById(id);
     }
 
     @GetMapping("/errors/category/{category}")
-    public Page<LogAnalysisRecord> byCategory(
+    public Page<LogAnalysisRecordResponse> byCategory(
             @PathVariable ErrorCategory category,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            Pageable pageable) {
+        return service.getByErrorCategory(category,pageable);
+    }
+
+    @GetMapping("/pipeline/{pipelineType}")
+    public Page<LogAnalysisRecordResponse> byPipeline(
+            @PathVariable String pipelineType,
+            Pageable pageable
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return service.getByErrorCategory(category, pageable);
+        return service.getByPipelineType(pipelineType, pageable);
     }
 
 }
