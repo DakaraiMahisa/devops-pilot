@@ -4,7 +4,9 @@ import com.devopspilot.devops_pilot.enums.ErrorCategory;
 import com.devopspilot.devops_pilot.repository.LogAnalysisRepository;
 import com.devopspilot.devops_pilot.service.LogAnalysisService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -40,6 +42,23 @@ public class AnalysisHistoryController {
             Pageable pageable
     ) {
         return service.getByPipelineType(pipelineType, pageable);
+    }
+    @GetMapping("/search")
+    public Page<LogAnalysisRecordResponse> search(
+            @RequestParam(required = false) ErrorCategory errorCategory,
+            @RequestParam(required = false) String pipelineType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt,desc") String sort
+    ) {
+        String[] sortParts = sort.split(",");
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(Sort.Direction.fromString(sortParts[1]), sortParts[0])
+        );
+
+        return service.search(errorCategory, pipelineType, pageable);
     }
 
 }
