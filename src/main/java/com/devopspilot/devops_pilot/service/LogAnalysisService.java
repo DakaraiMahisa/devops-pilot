@@ -6,6 +6,7 @@ import com.devopspilot.devops_pilot.dto.LogAnalysisRecordResponse;
 import com.devopspilot.devops_pilot.dto.LogAnalysisRequest;
 import com.devopspilot.devops_pilot.dto.LogAnalysisResponse;
 
+import com.devopspilot.devops_pilot.enums.AnalysisStatus;
 import com.devopspilot.devops_pilot.enums.ErrorCategory;
 import com.devopspilot.devops_pilot.integration.OpenAiClient;
 import com.devopspilot.devops_pilot.model.LogAnalysisRecord;
@@ -23,12 +24,14 @@ public class LogAnalysisService {
 
     private final OpenAiClient openAiClient;
     private final LogAnalysisRepository repository;
-    public LogAnalysisService(OpenAiClient openAiClient,LogAnalysisRepository repository) {
+    private final AsyncAnalysisWorker asyncWorker;
+    public LogAnalysisService(OpenAiClient openAiClient,LogAnalysisRepository repository,AsyncAnalysisWorker asyncWorker) {
         this.openAiClient = openAiClient;
         this.repository=repository;
+        this.asyncWorker = asyncWorker;
     }
     public LogAnalysisResponse analyze(LogAnalysisRequest request){
-// 1. Call AI
+         // 1. Call AI
         AiAnalysisResult aiResult =
                 openAiClient.analyzeLog(request.getLogText());
 
@@ -41,14 +44,6 @@ public class LogAnalysisService {
                 aiResult.getConfidence() <= 0) {
             aiResult.setConfidence(0.0);
         }
-
-       /* // 3. Build DOMAIN object (business meaning)
-        LogAnalysis domain = new LogAnalysis();
-        domain.setSummary(aiResult.getSummary());
-        domain.setRootCause(aiResult.getRootCause());
-        domain.setSuggestedFixes(aiResult.getSuggestedFixes());
-        domain.setErrorCategory(aiResult.getErrorCategory());
-        domain.setConfidence(aiResult.getConfidence());*/
 
         // 4. Build PERSISTENCE object (traceability)
 
@@ -108,6 +103,7 @@ public class LogAnalysisService {
     private LogAnalysisRecordResponse mapToResponse(LogAnalysisRecord record) {
         LogAnalysisRecordResponse dto = new LogAnalysisRecordResponse();
         dto.setId(record.getId());
+        dto.setStatus(record.getStatus());
         dto.setPipelineType(record.getPipelineType());
         dto.setSummary(record.getSummary());
         dto.setRootCause(record.getRootCause());
@@ -141,5 +137,19 @@ public class LogAnalysisService {
         return page.map(this::mapToResponse);
     }
 
+    public String submitAsync(LogAnalysisRequest request) {
+
+        LogAnalysisRecord record = new LogAnalysisRecord();
+        record.setPipelineType(request.getPipelineType());
+        record.setLogText(request.getLogText());
+        record.setCreatedAt(Instant.now());
+        record.setStatus(AnalysisStatus.PENDING);
+
+        repository.save(record);
+
+        asyncWorker.processAnalysis(record);
+
+        return record.getId();
+    }
 
 }
