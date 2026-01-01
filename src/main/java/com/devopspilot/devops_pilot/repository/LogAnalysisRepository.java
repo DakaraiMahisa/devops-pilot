@@ -11,7 +11,6 @@ import java.util.List;
 public interface LogAnalysisRepository extends MongoRepository<LogAnalysisRecord,String>{
     Page<LogAnalysisRecord> findByErrorCategory(ErrorCategory category, Pageable pageable);
 
-   /* List<LogAnalysisRecord> findByPipelineType(String pipelineType);*/
    Page<LogAnalysisRecord> findByPipelineTypeIgnoreCase(
            String pipelineType,
            Pageable pageable);
@@ -22,5 +21,8 @@ public interface LogAnalysisRepository extends MongoRepository<LogAnalysisRecord
             Instant end
     );
 
-    /*Page<LogAnalysisRecord> getByPipelineType(String pipelineType, Pageable pageable);*/
+    Page<LogAnalysisRecord> findByErrorCategoryAndPipelineTypeIgnoreCase(
+            ErrorCategory category,
+            String pipelineType,
+            Pageable pageable);
 }

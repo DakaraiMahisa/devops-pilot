@@ -119,6 +119,29 @@ public class LogAnalysisService {
         dto.setCreatedAt(record.getCreatedAt());
         return dto;
     }
+    public Page<LogAnalysisRecordResponse> search(
+            ErrorCategory category,
+            String pipelineType,
+            Pageable pageable) {
+
+        Page<LogAnalysisRecord> page;
+
+        if (category != null && pipelineType != null) {
+            page = repository
+                    .findByErrorCategoryAndPipelineTypeIgnoreCase(
+                            category, pipelineType, pageable);
+        } else if (category != null) {
+            page = repository
+                    .findByErrorCategory(category, pageable);
+        } else if (pipelineType != null) {
+            page = repository
+                    .findByPipelineTypeIgnoreCase(pipelineType, pageable);
+        } else {
+            page = repository.findAll(pageable);
+        }
+
+        return page.map(this::mapToResponse);
+    }
 
 
 }
