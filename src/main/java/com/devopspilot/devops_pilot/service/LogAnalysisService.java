@@ -8,8 +8,6 @@ import com.devopspilot.devops_pilot.dto.LogAnalysisResponse;
 
 import com.devopspilot.devops_pilot.enums.ErrorCategory;
 import com.devopspilot.devops_pilot.integration.OpenAiClient;
-
-import com.devopspilot.devops_pilot.model.LogAnalysis;
 import com.devopspilot.devops_pilot.model.LogAnalysisRecord;
 import com.devopspilot.devops_pilot.repository.LogAnalysisRepository;
 import org.springframework.data.domain.Page;
