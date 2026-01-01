@@ -1,5 +1,6 @@
 package com.devopspilot.devops_pilot.dto;
 
+import com.devopspilot.devops_pilot.enums.AnalysisStatus;
 import com.devopspilot.devops_pilot.enums.ErrorCategory;
 
 import java.time.Instant;
@@ -15,7 +16,7 @@ public class LogAnalysisRecordResponse {
     private ErrorCategory errorCategory;
     private Double confidence;
     private Instant createdAt;
-
+    private AnalysisStatus status;
     public String getId() {
         return id;
     }
@@ -78,5 +79,13 @@ public class LogAnalysisRecordResponse {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public AnalysisStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AnalysisStatus status) {
+        this.status = status;
     }
 }

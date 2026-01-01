@@ -1,5 +1,6 @@
 package com.devopspilot.devops_pilot.model;
 
+import com.devopspilot.devops_pilot.enums.AnalysisStatus;
 import com.devopspilot.devops_pilot.enums.ErrorCategory;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -24,6 +25,24 @@ public class LogAnalysisRecord {
     private ErrorCategory errorCategory;
     private Double confidence;
 
+    private AnalysisStatus status;
+    private String failureReason;
+
+    public AnalysisStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AnalysisStatus status) {
+        this.status = status;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
 
     private List<String> suggestedFixes;
 
@@ -104,4 +123,6 @@ public class LogAnalysisRecord {
     public void setConfidence(Double confidence) {
         this.confidence = confidence;
     }
+
+
 }
