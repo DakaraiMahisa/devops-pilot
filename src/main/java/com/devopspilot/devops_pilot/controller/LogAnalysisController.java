@@ -1,6 +1,7 @@
 package com.devopspilot.devops_pilot.controller;
 import com.devopspilot.devops_pilot.dto.LogAnalysisRequest;
 import com.devopspilot.devops_pilot.service.LogAnalysisService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +19,10 @@ public class LogAnalysisController {
     public LogAnalysisController(LogAnalysisService service){
         this.service = service;
     }
-   /* @PostMapping("/analyze")
-    public LogAnalysisResponse analyze(@Valid @RequestBody LogAnalysisRequest request) {
-        return service.analyze(request);
-    }*/
 
     @PostMapping("/analyze")
     public ResponseEntity<Map<String, String>> analyzeAsync(
-            @RequestBody LogAnalysisRequest request) {
+           @Valid @RequestBody LogAnalysisRequest request) {
 
         String id = service.submitAsync(request);
 

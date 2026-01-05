@@ -2,7 +2,9 @@ package com.devopspilot.devops_pilot.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class LogAnalysisRequest {
 
     @NotBlank
@@ -11,20 +13,4 @@ public class LogAnalysisRequest {
     @NotBlank
     @Size(min=20,max=50000)
     private String logText;
-
-    public String getPipelineType() {
-        return pipelineType;
-    }
-
-    public void setPipelineType(String pipelineType) {
-        this.pipelineType = pipelineType;
-    }
-
-    public String getLogText() {
-        return logText;
-    }
-
-    public void setLogText(String logText) {
-        this.logText = logText;
-    }
 }
